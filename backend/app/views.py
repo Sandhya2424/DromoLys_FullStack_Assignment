@@ -107,7 +107,7 @@ class ColumnStatsAPIView(APIView):
                 "max": max(numeric_values),
                 "mean": round(sum(numeric_values)/len(numeric_values), 2),
                 "median": statistics.median(numeric_values),
-                "mode": statistics.mode(numeric_values)  # ties will pick first
+                "mode": statistics.mode(numeric_values)
             })
         else:
             freq = {}

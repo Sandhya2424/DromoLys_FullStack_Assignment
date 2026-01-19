@@ -6,14 +6,14 @@ function Stats({ datasetId }) {
   const [columns, setColumns] = useState([]);
   const [selectedColumn, setSelectedColumn] = useState('');
 
-  // Fetch column names when datasetId changes
+
   useEffect(() => {
     const fetchColumns = async () => {
       if (!datasetId) return;
       const res = await getTable(datasetId);
       if (res.data.length > 0) {
-        setColumns(Object.keys(res.data[0].data)); // column names
-        setSelectedColumn(Object.keys(res.data[0].data)[0]); // default first column
+        setColumns(Object.keys(res.data[0].data)); 
+        setSelectedColumn(Object.keys(res.data[0].data)[0]); 
       }
     };
     fetchColumns();

@@ -1,67 +1,77 @@
-import React, { useState } from 'react';
-import { getHistogram } from '../services/Apicalls';
-import { Bar } from 'react-chartjs-2';
+import React, { useState } from "react";
+import { Bar } from "react-chartjs-2";
+import { getHistogram } from "../services/Apicalls";
+
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
-  Title,
   Tooltip,
-  Legend
-} from 'chart.js';
+  Legend,
+} from "chart.js";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 function Histogram({ datasetId, columns }) {
-  const [column, setColumn] = useState('');
-  const [bins, setBins] = useState([]);
+  const [selectedColumn, setSelectedColumn] = useState("");
+  const [histogramData, setHistogramData] = useState([]);
 
-  const handleHistogram = async () => {
-    if (!column || !datasetId) return;
-    const res = await getHistogram(datasetId, column);
-    setBins(res.data.bins);
+  const loadHistogram = async () => {
+    if (!selectedColumn) return;
+
+    try {
+      const response = await getHistogram(datasetId, selectedColumn);
+      setHistogramData(response.data.bins);
+    } catch (error) {
+      console.error("Error loading histogram:", error);
+    }
   };
 
-  const data = {
-    labels: bins.map((b) => `${b.min.toFixed(1)} - ${b.max.toFixed(1)}`),
+  const chartData = {
+    labels: histogramData.map(
+      (bin) => `${bin.min.toFixed(1)} - ${bin.max.toFixed(1)}`
+    ),
     datasets: [
       {
-        label: column,
-        data: bins.map((b) => b.count),
-        backgroundColor: 'rgba(75,192,192,0.6)',
+        label: selectedColumn,
+        data: histogramData.map((bin) => bin.count),
       },
     ],
   };
 
   return (
     <div className="container w-75 mt-3 border p-3 shadow">
-      <h3>Histogram</h3>
+      <h4>Histogram</h4>
 
-      {columns && columns.length > 0 ? (
-        <select
-          className="form-control mb-2"
-          value={column}
-          onChange={(e) => setColumn(e.target.value)}
-        >
-          <option value="">Select column</option>
-          {columns.map((col) => (
-            <option key={col} value={col}>{col}</option>
-          ))}
-        </select>
+      {columns?.length > 0 ? (
+        <>
+          <select
+            className="form-control mb-2"
+            value={selectedColumn}
+            onChange={(e) => setSelectedColumn(e.target.value)}
+          >
+            <option value="">Select column</option>
+            {columns.map((col) => (
+              <option key={col} value={col}>
+                {col}
+              </option>
+            ))}
+          </select>
+
+          <button
+            className="btn btn-primary mb-2"
+            onClick={loadHistogram}
+            disabled={!selectedColumn}
+          >
+            Generate
+          </button>
+        </>
       ) : (
-        <p>Please upload a CSV first to see columns.</p>
+        <p>Please upload a CSV file first.</p>
       )}
 
-      <button
-        className="btn btn-primary mb-2"
-        onClick={handleHistogram}
-        disabled={!column}
-      >
-        Show Histogram
-      </button>
-
-      {bins.length > 0 && <Bar data={data} />}
+      {histogramData.length > 0 && <Bar data={chartData} />}
     </div>
   );
 }

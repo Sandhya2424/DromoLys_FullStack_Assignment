@@ -14,11 +14,10 @@ function Upload({ setDatasetId, setColumns }) {
       console.log(res.data);
       setMessage('Upload successful!');
 
-      // Update App state
       if (setDatasetId) setDatasetId(res.data.dataset_id);
       if (setColumns) setColumns(Object.keys(res.data.columns || {}));
 
-      // Navigate to Table page
+
       navigate('/table');
     } catch (err) {
       console.error(err);

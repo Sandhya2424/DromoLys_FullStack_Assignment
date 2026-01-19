@@ -4,7 +4,7 @@ import { getTable } from '../services/Apicalls';
 function Table({ datasetId }) {
   const [rows, setRows] = useState([]);
 
-  // Fetch table whenever datasetId changes
+
   useEffect(() => {
     const fetchTable = async () => {
       if (!datasetId) return;
